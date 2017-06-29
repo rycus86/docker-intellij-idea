@@ -3,6 +3,9 @@ FROM debian
 LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
 
 # Set up installer for Oracle Java JDK 8
+RUN apt-get update && apt-get install --no-install-recommends -y \
+  gnupg2 dirmngr \
+  && rm -rf /var/lib/apt/lists/*
 RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' >> /etc/apt/sources.list.d/java-8-debian.list
 RUN echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' >> /etc/apt/sources.list.d/java-8-debian.list
 RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
