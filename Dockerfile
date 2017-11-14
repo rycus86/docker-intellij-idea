@@ -20,7 +20,7 @@ RUN  \
   libfontconfig1 \
   && rm -rf /var/lib/apt/lists/*
 
-ARG idea_source=https://download-cf.jetbrains.com/idea/ideaIC-2017.2.5.tar.gz
+ARG idea_source=https://download-cf.jetbrains.com/idea/ideaIC-2017.2.6.tar.gz
 ARG idea_local_dir=.IdeaIC2017.2
 
 RUN mkdir /opt/idea
