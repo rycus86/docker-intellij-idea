@@ -2,37 +2,48 @@ FROM debian
 
 LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
 
-# Set up installer for Oracle Java JDK 8
-RUN apt-get update && apt-get install --no-install-recommends -y \
-  gnupg2 dirmngr \
-  && rm -rf /var/lib/apt/lists/*
-RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' >> /etc/apt/sources.list.d/java-8-debian.list
-RUN echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' >> /etc/apt/sources.list.d/java-8-debian.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
-RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
-RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 seen true" | debconf-set-selections
-
 RUN  \
+  # install dependencies
   apt-get update && apt-get install --no-install-recommends -y \
-  gcc git openssh-client \
-  oracle-java8-installer \
+  gcc git openssh-client curl ca-certificates \
   libxtst-dev libxext-dev libxrender-dev libfreetype6-dev \
-  libfontconfig1 \
-  && rm -rf /var/lib/apt/lists/*
+  libfontconfig1 && \
+  rm -rf /var/lib/apt/lists/* && \ 
+  # prepare folders
+  mkdir -p /opt/idea && \
+  mkdir -p /tmp/installer && \
+  mkdir -p /opt/java && \
+  # install OpenJDK 10
+  curl -fsSL http://jdk.java.net/10/ | grep -oE '"https?://download.java.net/java/.*_linux-x64_bin.tar.gz"' | sed 's/"//g' > /tmp/installer/download.url && \
+  echo "Downloading JDK from `cat /tmp/installer/download.url` ..." && \
+  curl -fsSL `cat /tmp/installer/download.url` > /tmp/installer/jdk.tgz && \
+  curl -fsSL `cat /tmp/installer/download.url`.sha256 > /tmp/installer/checksum && \
+  echo "  /tmp/installer/jdk.tgz" >> /tmp/installer/checksum && \
+  echo -n "Checksum check: " && sha256sum -c /tmp/installer/checksum && \
+  echo "Download complete, extracting ..." && \
+  tar --strip-components=1 -xzf /tmp/installer/jdk.tgz -C /opt/java && \
+  rm -rf /tmp/installer && \
+  for JAVA_BIN in /opt/java/bin/*; do \
+    if [ -x "$JAVA_BIN" ]; then ln -s "$JAVA_BIN" /usr/bin/`basename "$JAVA_BIN"`; fi ; \
+  done && \
+  echo "Java binary is ready:" && \
+  java -version 2>&1
 
-ARG idea_source=https://download.jetbrains.com/idea/ideaIU-182.3684.40.tar.gz
-ARG idea_local_dir=.IdeaIC2018.2
+ARG idea_source=https://download.jetbrains.com/idea/ideaIU-183.2153.8.tar.gz
+ARG idea_local_dir=.IdeaIC2018.3
 
-RUN mkdir /opt/idea
 WORKDIR /opt/idea
 
 ADD $idea_source /opt/idea/installer.tgz
 
-RUN tar --strip-components=1 -xzf installer.tgz && rm installer.tgz
+RUN tar --strip-components=1 -xzf installer.tgz && \
+  rm installer.tgz && \
+  useradd -ms /bin/bash developer
 
-RUN useradd -ms /bin/bash developer
 USER developer
+
 ENV HOME /home/developer
+ENV JAVA_HOME "/opt/java"
 
 RUN mkdir /home/developer/.Idea \
   && ln -sf /home/developer/.Idea /home/developer/$idea_local_dir
