@@ -1,21 +1,10 @@
-FROM debian
+FROM adoptopenjdk/openjdk8
 
 LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
-
-# Set up installer for Oracle Java JDK 8
-RUN apt-get update && apt-get install --no-install-recommends -y \
-  gnupg2 dirmngr \
-  && rm -rf /var/lib/apt/lists/*
-RUN echo 'deb http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' >> /etc/apt/sources.list.d/java-8-debian.list
-RUN echo 'deb-src http://ppa.launchpad.net/webupd8team/java/ubuntu trusty main' >> /etc/apt/sources.list.d/java-8-debian.list
-RUN apt-key adv --keyserver keyserver.ubuntu.com --recv-keys EEA14886
-RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 select true" | debconf-set-selections
-RUN echo "oracle-java8-installer shared/accepted-oracle-license-v1-1 seen true" | debconf-set-selections
 
 RUN  \
   apt-get update && apt-get install --no-install-recommends -y \
   gcc git openssh-client \
-  oracle-java8-installer \
   libxtst-dev libxext-dev libxrender-dev libfreetype6-dev \
   libfontconfig1 \
   && rm -rf /var/lib/apt/lists/*
