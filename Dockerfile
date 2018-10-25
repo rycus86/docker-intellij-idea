@@ -29,7 +29,7 @@ RUN  \
   echo "Java binary is ready:" && \
   java -version 2>&1
 
-ARG idea_source=https://download.jetbrains.com/idea/ideaIU-183.3647.12.tar.gz
+ARG idea_source=https://download.jetbrains.com/idea/ideaIU-183.3975.18.tar.gz
 ARG idea_local_dir=.IdeaIC2018.3
 
 WORKDIR /opt/idea
