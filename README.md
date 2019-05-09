@@ -10,6 +10,7 @@ docker run --rm \
   -v ~/.Idea.java:/home/developer/.java \
   -v ~/.Idea.maven:/home/developer/.m2 \
   -v ~/.Idea.gradle:/home/developer/.gradle \
+  -v ~/.Idea.share:/home/developer/.local/share/JetBrains \
   -v ~/Project:/home/developer/Project \
   --name idea-$(head -c 4 /dev/urandom | xxd -p)-$(date +'%Y%m%d-%H%M%S') \
 rycus86/intellij-idea:latest
