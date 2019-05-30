@@ -11,7 +11,7 @@ RUN  \
   && useradd -ms /bin/bash developer
 
 ARG idea_source=https://download.jetbrains.com/idea/ideaIC-192.4205.45.tar.gz
-ARG idea_local_dir=.IdeaIC2019.1
+ARG idea_local_dir=.IdeaIC2019.2
 
 WORKDIR /opt/idea
 
