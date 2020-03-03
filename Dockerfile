@@ -3,7 +3,7 @@ FROM adoptopenjdk/openjdk8
 LABEL maintainer "Viktor Adam <rycus86@gmail.com>"
 
 ARG IDEA_VERSION=2019.3
-ARG IDEA_BUILD=2019.3.2
+ARG IDEA_BUILD=193.6911.4
 
 RUN  \
   apt-get update && apt-get install --no-install-recommends -y \
