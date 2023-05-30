@@ -13,14 +13,34 @@ docker run --rm \
   -v ~/.Idea.share:/home/developer/.local/share/JetBrains \
   -v ~/Project:/home/developer/Project \
   --name idea-$(head -c 4 /dev/urandom | xxd -p)-$(date +'%Y%m%d-%H%M%S') \
-rycus86/intellij-idea:latest
+rycus86/intellij-idea:${IDE_VERSION}
 ```
 
 Docker Hub Page: https://hub.docker.com/r/rycus86/intellij-idea/
+([available versions](https://hub.docker.com/r/rycus86/intellij-idea/tags))
+
+### OS X instructions
+
+1. Install XQuartz from https://www.xquartz.org/releases/
+2. Configure `Allow connections from network clients` in the settings
+    - Restart the system (needed only once when this is enabled)
+3. Run `xhost +localhost` in a terminal to allow connecting to X11 over the TCP socket
+4. Use `-e DISPLAY=host.docker.internal:0` for passing the `${DISPLAY}` environment
+
+#### For Windows hosts (simplified):
+
+```
+docker.exe run --rm -d ^
+     --name intellij-idea ^
+     -e DISPLAY=YOUR_IP_ADDRESS:0.0 ^
+     -v %TEMP%\.X11-unix:/tmp/.X11-unix ^
+     -v %USERPROFILE%\intellij-idea:/home/developer ^
+     rycus86/intellij-idea:%IDE_VERSION%
+```
 
 ### Notes
 
-The IDE will have access to AdoptOpenJDK 8 and to Git as well.
+The IDE will have access to a JDK and to Git as well.
 Project folders need to be mounted like `-v ~/Project:/home/developer/Project`.
 The actual name can be anything - I used something random to be able to start multiple instances if needed.
 You might want to consider using `--network=host` if you're running servers from the IDE.
@@ -39,14 +59,8 @@ But first you want to install it if you don't have one. Find a package name with
 repositories *(e.g.: on Arch-based distros it will be in `xorg-xhost` package)*.
 Then use it to allow all local connections:
 
-```bash
-xhost +local:
-```
-
-Or just allow them to a root user only:
-
-```bash
-xhost +si:localuser:root
+```shell
+xhost +localhost
 ```
 
 #### Idea Access Denied Exception
@@ -56,4 +70,3 @@ created, Docker will create them with a root user and Idea will not have access 
 
 To solve this you should create volume directories by yourself with your default user or just
 `chown` them after they were created and rerun the container.
-
